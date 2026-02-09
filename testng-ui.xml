@@ -1,0 +1,10 @@
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="UI Test Suite">
+    
+    <!-- UI Tests -->
+    <test name="UI Tests">
+        <classes>
+            <class name="UITests.TestCreateEventThenInvoice"/>
+        </classes>
+    </test>
+</suite>
