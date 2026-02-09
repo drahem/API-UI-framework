@@ -13,27 +13,26 @@ This project helps you **automatically test both APIs and web applications** ins
 
 **What is UI Testing?** UI testing means testing the website that users see and interact with - clicking buttons, filling forms, navigating pages, etc. It's like having a robot that uses the website just like a human would.
 
-## 🎯 What Does This Framework Test?
+## 🎯 What Can This Framework Test?
 
-This framework tests an event management system in two ways:
+This framework is designed to test both APIs and web applications. You can use it to test:
 
 ### API Testing
-Tests the backend services (the "behind the scenes" part):
-- **Authentication** - Logging in and getting access tokens
-- **Blobs** - File storage and retrieval
-- **Events** - Creating, reading, updating, and deleting events via API
-- **Locations** - Managing location information via API
-- **Users** - User management operations via API
-- **Tasks** - Task creation and management via API
-- And many more...
+Test backend services (the "behind the scenes" part):
+- **REST APIs** - Any RESTful API endpoints
+- **Authentication** - Login, token management, and authorization
+- **CRUD Operations** - Create, Read, Update, Delete operations
+- **Data Validation** - Verify API responses and data integrity
+- **Error Handling** - Test error scenarios and status codes
+- **Integration Testing** - Test how different APIs work together
 
 ### UI Testing
-Tests the website that users interact with (the "what you see" part):
-- **Login** - Testing the login page and authentication flow
-- **Event Creation** - Creating events through the website interface
-- **Location Management** - Adding and managing locations through the UI
-- **Invoice Generation** - Creating invoices for events
-- **End-to-End Flows** - Complete user workflows (e.g., login → create location → create event → generate invoice)
+Test the website that users interact with (the "what you see" part):
+- **User Interface** - Buttons, forms, navigation, and page elements
+- **User Workflows** - Complete end-to-end user journeys
+- **Form Validation** - Input fields, dropdowns, and form submissions
+- **Navigation** - Page transitions and routing
+- **Visual Elements** - Text, images, and layout verification
 
 ## 🛠️ Tools Used (Simple Explanation)
 
@@ -45,6 +44,7 @@ This project uses several tools that work together:
 4. **RestAssured** - A library that makes it easy to send HTTP requests and check API responses (for API testing)
 5. **Selenium WebDriver** - A tool that controls a web browser to test websites (for UI testing)
 6. **Allure** - A tool that creates beautiful, easy-to-read test reports
+7. **YAML** - A format for storing test data in an easy-to-read way (for data-driven testing)
 
 ## 📋 Prerequisites - What You Need Before Starting
 
@@ -113,12 +113,12 @@ src/test/resources/config.properties
 ```
 
 You'll see different environments like:
-- `blue.base.api` - Blue environment URL
-- `yellow.base.api` - Yellow environment URL
-- `stage.base.api` - Staging environment URL
-- `prod.base.api` - Production environment URL
+- `stage.base.url` - Staging environment UI URL
+- `stage.base.api` - Staging environment API URL
+- `prod.base.url` - Production environment UI URL
+- `prod.base.api` - Production environment API URL
 
-The `default.env` setting at the bottom tells the framework which environment to use by default. You can change it to `blue`, `yellow`, `stage`, `prod`, etc.
+The `default.env` setting at the bottom tells the framework which environment to use by default. You can change it to `stage`, `prod`, etc.
 
 **Important:** Make sure the URLs and credentials in this file are correct for your testing environment.
 
@@ -161,21 +161,19 @@ If you only want to test one API (for example, just the Blob API):
 mvn clean test -Dtest=BlobAPITest
 ```
 
-Replace `BlobAPITest` with any API test class name:
-- `EventAPITest` - Tests for Events API
-- `LocationAPITest` - Tests for Locations API
-- `UserAPITest` - Tests for Users API
-- `LoginApiTest` - Tests for Login API
-- etc.
+Replace `BlobAPITest` with any API test class name you create. For example:
+- `MyAPITest` - Your custom API test
+- `HealthTest` - Health check tests
+- Or any other test class you create in `src/test/java/api/tests/`
 
 **For UI Tests:**
-To run UI tests:
+To run UI tests, create your test class first, then run:
 
 ```bash
-mvn clean test -Dtest=TestCreateEventThenInvoice
+mvn clean test -Dtest=MyUITest
 ```
 
-Or run all UI tests using the UI test suite:
+Replace `MyUITest` with your actual UI test class name. Or run all UI tests using the UI test suite:
 
 ```bash
 mvn clean test -DsuiteXmlFile=testng-ui.xml
@@ -238,37 +236,35 @@ Understanding the folder structure helps you navigate the project:
 jarvis/
 ├── src/
 │   ├── main/java/                    # Main code (not tests)
-│   │   ├── ApiRequests/              # Classes that make API calls
-│   │   │   ├── blob/                 # Blob API request class
-│   │   │   ├── event/                # Event API request class
-│   │   │   └── ...                   # Other API request classes
-│   │   ├── APIComponents/            # Reusable API test components
-│   │   │   ├── blob/                 # Blob component (helper methods)
-│   │   │   └── ...                   # Other API components
-│   │   ├── UIComponents/             # Reusable UI test components
-│   │   │   ├── events/               # Event UI component
-│   │   │   ├── invoice/              # Invoice UI component
-│   │   │   ├── locations/            # Location UI component
-│   │   │   └── login/                # Login UI component
+│   │   ├── ApiRequests/              # Classes that make API calls (add your request classes here)
+│   │   ├── APIComponents/            # Reusable API test components (add your components here)
+│   │   ├── UIComponents/             # Reusable UI test components (add your components here)
 │   │   ├── pages/                    # Page Object Model classes
 │   │   │   └── BasePage.java         # Base class for page objects
+│   │   ├── annotations/              # Custom annotations
+│   │   │   └── YamlTestCase.java     # Annotation for YAML test data
 │   │   ├── base/
 │   │   │   └── BaseApiTest.java      # Base class - all API tests extend this
 │   │   ├── config/
 │   │   │   └── ConfigManager.java    # Reads configuration files
 │   │   └── utils/
 │   │       ├── APIUtils.java         # Helper methods for API calls
-│   │       ├── SeleniumUtils.java    # Helper methods for UI interactions
-│   │       └── AllureUtils.java      # Helper methods for reports
+│   │       ├── SeleniumUtils.java   # Helper methods for UI interactions
+│   │       ├── AllureUtils.java      # Helper methods for reports
+│   │       ├── YamlDataProvider.java # Provides test data from YAML files
+│   │       ├── YamlDataLoader.java  # Loads YAML test data files
+│   │       ├── YamlHelper.java      # Helper methods for YAML operations
+│   │       └── YamlTestInterceptor.java # Intercepts tests with YAML annotations
+│   ├── resources/
+│   │   └── testData/                 # YAML test data files (add your YAML files here)
 │   └── test/
 │       ├── java/
-│       │   ├── api/tests/            # ⭐ API TEST FILES GO HERE
-│       │   │   ├── BlobAPITest.java  # Tests for Blob API
-│       │   │   ├── EventAPITest.java # Tests for Event API
-│       │   │   └── ...               # Other API test files
+│       │   ├── api/
+│       │   │   ├── tests/            # ⭐ API TEST FILES GO HERE (add your test classes)
+│       │   │   └── utils/
+│       │   │       └── EnvironmentReader.java  # Environment utility
 │       │   └── UITests/              # ⭐ UI TEST FILES GO HERE
-│       │       ├── BaseTest.java     # Base class for UI tests
-│       │       └── TestCreateEventThenInvoice.java  # UI test example
+│       │       └── BaseTest.java     # Base class for UI tests
 │       └── resources/
 │           ├── config.properties     # Environment configuration
 │           └── allure.properties     # Allure report settings
@@ -287,20 +283,14 @@ Let's look at examples of both API and UI tests to understand how they work.
 Here's what an API test looks like:
 
 ```java
-public class BlobAPITest extends BaseApiTest {
+public class MyAPITest extends BaseApiTest {
     
-    private BlobComponent blobComponent;
-    
-    @BeforeClass
-    public void setup() {
-        blobComponent = new BlobComponent();
-    }
-    
-    @Test(groups = "api", description = "Search for blobs")
-    public void testSearchBlobs() {
-        Response response = blobComponent.searchBlobs(bearerToken);
+    @Test(groups = "api", description = "Test API endpoint")
+    public void testApiEndpoint() {
+        // Use APIUtils to make API calls
+        Response response = APIUtils.get("/api/endpoint", bearerToken);
         Assert.assertEquals(response.getStatusCode(), 200, 
-            "Search blobs should return 200 status code");
+            "API should return 200 status code");
     }
 }
 ```
@@ -309,77 +299,126 @@ public class BlobAPITest extends BaseApiTest {
 
 1. **`extends BaseApiTest`** - This means our test class inherits from the base class, which gives us access to things like `bearerToken` and `baseUrl`.
 
-2. **`@BeforeClass`** - This method runs ONCE before all tests in this class. It sets up things we need (like creating the `blobComponent`).
+2. **`@Test`** - This marks a method as a test. TestNG will run all methods marked with `@Test`.
 
-3. **`@Test`** - This marks a method as a test. TestNG will run all methods marked with `@Test`.
+3. **`APIUtils.get(...)`** - This sends a GET request to the API. It returns a `Response` object.
 
-4. **`blobComponent.searchBlobs(bearerToken)`** - This sends a request to the API to search for blobs. It returns a `Response` object.
-
-5. **`Assert.assertEquals(...)`** - This checks if the response status code is 200 (which means "OK" or "success"). If it's not 200, the test fails.
+4. **`Assert.assertEquals(...)`** - This checks if the response status code is 200 (which means "OK" or "success"). If it's not 200, the test fails.
 
 **What happens when you run this test:**
-1. The `setup()` method runs first
-2. The `testSearchBlobs()` method runs
-3. It sends a request to the Blob API (behind the scenes, no browser)
-4. It checks if the response code is 200
-5. If yes → Test passes ✅
-6. If no → Test fails ❌
+1. The `testApiEndpoint()` method runs
+2. It sends a request to the API (behind the scenes, no browser)
+3. It checks if the response code is 200
+4. If yes → Test passes ✅
+5. If no → Test fails ❌
 
 ### Example 2: UI Test
 
 Here's what a UI test looks like:
 
 ```java
-public class TestCreateEventThenInvoice extends BaseTest {
+public class MyUITest extends BaseTest {
     
     @Test
-    public void testCreateEventThenInvoice() {
-        // Step 1: Login
-        LoginComponent loginComponent = new LoginComponent(driver);
-        loginComponent.navigateToLogin("tenant", "site");
-        loginComponent.doLogin("user@example.com", "password");
+    public void testWebPage() {
+        // Navigate to a page
+        driver.get("https://example.com");
         
-        // Step 2: Create location
-        LocationComponent locationComponent = new LocationComponent(driver);
-        locationComponent.createLocation("New Location", "Description");
+        // Use SeleniumUtils helper methods
+        utils.click(By.id("button-id"));
+        utils.sendKeys(By.id("input-id"), "test data");
         
-        // Step 3: Create event
-        EventsComponent eventsComponent = new EventsComponent(driver);
-        eventsComponent.createEvent("Event Title", "15", "March", "New Location");
-        
-        // Step 4: Verify everything worked
-        Assert.assertTrue(eventsComponent.verifyEventCreated(), 
-            "Event should be created successfully");
+        // Verify something
+        String text = utils.getText(By.className("result"));
+        Assert.assertEquals(text, "Expected Text", "Text should match");
     }
 }
 ```
 
 **Breaking it down:**
 
-1. **`extends BaseTest`** - This gives us access to `driver` (the browser controller) and `utils` (helper methods).
+1. **`extends BaseTest`** - This gives us access to `driver` (the browser controller) and `utils` (helper methods from SeleniumUtils).
 
-2. **`LoginComponent`** - This is a reusable component that knows how to log in. It uses the `driver` to interact with the website.
+2. **`driver.get(...)`** - This opens a browser and navigates to the specified URL.
 
-3. **`loginComponent.doLogin(...)`** - This actually opens a browser, navigates to the login page, fills in the username and password, and clicks the login button.
+3. **`utils.click(...)`** - This clicks on an element found by a locator (like ID, class, XPath).
 
-4. **`LocationComponent`** - Another component that knows how to create locations on the website.
+4. **`utils.sendKeys(...)`** - This types text into an input field.
 
-5. **`Assert.assertTrue(...)`** - This checks if something is true. In this case, it checks if the event was created successfully.
+5. **`Assert.assertEquals(...)`** - This checks if something matches an expected value.
 
 **What happens when you run this test:**
 1. A Chrome browser opens automatically
-2. The test navigates to the login page
-3. It fills in credentials and logs in
-4. It creates a location
-5. It creates an event
-6. It verifies everything worked
-7. The browser closes
-8. If all steps pass → Test passes ✅
-9. If any step fails → Test fails ❌
+2. The test navigates to the website
+3. It interacts with elements (clicks, types, etc.)
+4. It verifies the results
+5. The browser closes
+6. If all steps pass → Test passes ✅
+7. If any step fails → Test fails ❌
 
 **Key Difference:**
 - **API tests** run in the background (no browser, faster)
 - **UI tests** open a real browser and interact with the website (slower, but tests what users actually see)
+
+### Example 3: Data-Driven Test with YAML
+
+This framework supports **data-driven testing** using YAML files. This means you can write one test and run it with different data from a YAML file:
+
+```java
+@Test(groups = {"regression", "e2e"}, 
+      dataProvider = "yamlData", 
+      dataProviderClass = YamlDataProvider.class)
+@YamlTestCase("invoice.yaml")
+public void testCreateEventThenInvoice(Map<String, Object> testData) {
+    // Use testData from YAML file
+    String username = testData.get("user").toString();
+    String password = testData.get("pass").toString();
+    // ... rest of test
+}
+```
+
+**What is YAML?** YAML is a human-readable format for storing data. It's easier to read and write than JSON or XML.
+
+**YAML File Example** (`src/main/resources/testData/invoice.yaml`):
+```yaml
+testCases:
+  - name: "Create event and invoice - Test Case 1"
+    data:
+      tenant: "my-tenant"
+      site: "my-site"
+      user: "user@example.com"
+      pass: "password123"
+      location: "Conference Room A"
+      locationDescription: "Main conference room"
+      eventTitle: "Team Meeting"
+      eventDate:
+        day: "15"
+        month: "March"
+        startTime: "10:00 AM"
+      invoiceAmount: "500.00"
+      customerName: "John Doe"
+      invoiceDescription: "Event invoice"
+  
+  - name: "Create event and invoice - Test Case 2"
+    data:
+      tenant: "my-tenant"
+      site: "my-site"
+      user: "user2@example.com"
+      pass: "password456"
+      # ... different data for second test case
+```
+
+**Benefits of YAML Test Data:**
+- ✅ **Easy to read** - Non-technical team members can understand and modify test data
+- ✅ **Reusable** - One test can run with multiple sets of data
+- ✅ **Maintainable** - Change test data without changing code
+- ✅ **Organized** - Keep all test data in one place
+
+**How it works:**
+1. Create a YAML file in `src/main/resources/testData/`
+2. Add the `@YamlTestCase` annotation to your test method
+3. Use `dataProvider = "yamlData"` in your `@Test` annotation
+4. The test will run once for each test case in the YAML file
 
 ## 🎓 Common Tasks for Beginners
 
@@ -393,10 +432,11 @@ public class TestCreateEventThenInvoice extends BaseTest {
 ### Task 2: Run Your First UI Test
 
 1. Make sure Chrome is installed on your computer
-2. Open a terminal in the project folder
-3. Run: `mvn clean test -Dtest=TestCreateEventThenInvoice`
-4. Watch as Chrome opens automatically and the test runs!
-5. Run: `mvn allure:serve` to see the results
+2. Create a UI test class in `src/test/java/UITests/` (extend `BaseTest`)
+3. Open a terminal in the project folder
+4. Run: `mvn clean test -Dtest=YourUITestClassName`
+5. Watch as Chrome opens automatically and the test runs!
+6. Run: `mvn allure:serve` to see the results
 
 **Note:** UI tests take longer because they actually open a browser and interact with the website.
 
@@ -405,17 +445,12 @@ public class TestCreateEventThenInvoice extends BaseTest {
 **For API tests:**
 Look in the folder: `src/test/java/api/tests/`
 
-You'll see files like:
-- `BlobAPITest.java`
-- `EventAPITest.java`
-- `LocationAPITest.java`
-- etc.
+Create your test files here. Each test class should extend `BaseApiTest`.
 
 **For UI tests:**
 Look in the folder: `src/test/java/UITests/`
 
-You'll see files like:
-- `TestCreateEventThenInvoice.java`
+Create your test files here. Each test class should extend `BaseTest`.
 
 ### Task 4: Run All API Tests
 
@@ -487,6 +522,55 @@ This opens a report showing:
 2. Try `mvn allure:serve` again
 3. Check if port 4040 is already in use (close other instances)
 
+## 📝 Working with Test Data (YAML Files)
+
+This framework uses **YAML files** to store test data, making it easy to run the same test with different data.
+
+### Creating a YAML Test Data File
+
+1. **Create a YAML file** in `src/main/resources/testData/`
+   - Example: `src/main/resources/testData/invoice.yaml`
+
+2. **Structure your YAML file** like this:
+```yaml
+testCases:
+  - name: "Test Case 1"
+    data:
+      user: "user@example.com"
+      pass: "password123"
+      location: "Room A"
+      # Add more test data fields here
+  
+  - name: "Test Case 2"
+    data:
+      user: "user2@example.com"
+      pass: "password456"
+      location: "Room B"
+      # Different data for second test case
+```
+
+3. **Use it in your test:**
+```java
+@Test(dataProvider = "yamlData", dataProviderClass = YamlDataProvider.class)
+@YamlTestCase("invoice.yaml")
+public void myTest(Map<String, Object> testData) {
+    String user = testData.get("user").toString();
+    // Use the data from YAML
+}
+```
+
+### Benefits of YAML Test Data
+
+- **Easy to modify** - Change test data without touching code
+- **Multiple test cases** - One file can contain many test scenarios
+- **Readable** - Non-programmers can understand and update test data
+- **Reusable** - Same test runs with different data automatically
+
+### YAML File Location
+
+- **Main location:** `src/main/resources/testData/`
+- **Alternative:** `src/test/resources/testdata/` (if using the older path)
+
 ## 🎯 Next Steps - Learning More
 
 Now that you can run tests, here are some things to try:
@@ -495,9 +579,10 @@ Now that you can run tests, here are some things to try:
 2. **Modify a test** - Try changing an assertion to see what happens
 3. **Add a simple test** - Create a new test method in an existing test class
 4. **Read the code** - Look at `APIUtils.java` for API helper methods and `SeleniumUtils.java` for UI helper methods
-5. **Check components** - See how `BlobComponent.java` makes API calls and how `LoginComponent.java` interacts with the UI
+5. **Create components** - Build reusable components in `APIComponents/` and `UIComponents/` folders for your tests
 6. **Watch a UI test run** - Run a UI test and watch the browser to see what the test is doing
 7. **Compare API vs UI** - Run the same feature test via API and UI to see the difference
+8. **Try YAML test data** - Create a YAML file and use it in a test to see data-driven testing in action
 
 ## 📚 Key Concepts to Learn
 
@@ -519,8 +604,10 @@ As you work with this framework, you'll learn:
 
 ### General Concepts:
 - **Assertions:** How to check if test results are correct
-- **Test Data:** How to provide different data to tests
+- **Test Data:** How to provide different data to tests (including YAML files)
+- **Data-Driven Testing:** Running the same test with different data sets
 - **Test Reports:** How to read and understand test results
+- **Annotations:** Special markers that tell the framework how to run tests
 
 ## 🤝 Getting Help
 
@@ -535,9 +622,11 @@ If you get stuck:
 
 You now know how to:
 - ✅ Set up the project
-- ✅ Run tests
+- ✅ Run tests (both API and UI)
 - ✅ View test reports
 - ✅ Understand basic test structure
+- ✅ Use YAML files for test data
+- ✅ Run data-driven tests
 
 Happy testing! 🚀
 
